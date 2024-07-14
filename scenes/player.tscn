@@ -1,9 +1,19 @@
-[gd_scene load_steps=19 format=3 uid="uid://dqtgmlj4yecv0"]
+[gd_scene load_steps=25 format=3 uid="uid://dqtgmlj4yecv0"]
 
 [ext_resource type="Texture2D" uid="uid://bjamqb7jkkf6j" path="res://assets/sprites/characters/player/player_idle.png" id="1_1b5ye"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_s5nmm"]
 [ext_resource type="Texture2D" uid="uid://c4vih3p5xnbka" path="res://assets/sprites/characters/player/player_jump.png" id="3_yfo8w"]
 [ext_resource type="Texture2D" uid="uid://bgfqhaqp4ysbx" path="res://assets/sprites/characters/player/player_walk.png" id="4_4r27y"]
+[ext_resource type="PackedScene" uid="uid://07wg3qqi8ki0" path="res://state_machine/state_machine.tscn" id="5_pte05"]
+[ext_resource type="Script" path="res://scripts/idle.gd" id="6_hrboy"]
+[ext_resource type="Script" path="res://scripts/walk.gd" id="7_mx8li"]
+[ext_resource type="Script" path="res://scripts/jump.gd" id="8_56g5m"]
+[ext_resource type="Script" path="res://scripts/fall.gd" id="9_6whx7"]
+[ext_resource type="Script" path="res://scripts/move_component.gd" id="10_xuge5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ytsjw"]
+atlas = ExtResource("3_yfo8w")
+region = Rect2(38, 0, 38, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q767j"]
 atlas = ExtResource("1_1b5ye")
@@ -16,10 +26,6 @@ region = Rect2(38, 0, 38, 40)
 [sub_resource type="AtlasTexture" id="AtlasTexture_ul8ib"]
 atlas = ExtResource("3_yfo8w")
 region = Rect2(0, 0, 38, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_et505"]
-atlas = ExtResource("3_yfo8w")
-region = Rect2(38, 0, 38, 40)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7o5yj"]
 atlas = ExtResource("4_4r27y")
@@ -57,6 +63,14 @@ region = Rect2(266, 0, 38, 40)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_ytsjw")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_q767j")
 }, {
 "duration": 1.0,
@@ -69,9 +83,6 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ul8ib")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_et505")
 }],
 "loop": false,
 "name": &"jump",
@@ -113,7 +124,7 @@ radius = 7.0
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_s5nmm")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="animations" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -19)
 sprite_frames = SubResource("SpriteFrames_nb75m")
 animation = &"jump"
@@ -122,3 +133,41 @@ autoplay = "idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -15)
 shape = SubResource("CapsuleShape2D_m5o68")
+
+[node name="state_machine" parent="." node_paths=PackedStringArray("starting_state") instance=ExtResource("5_pte05")]
+starting_state = NodePath("idle")
+
+[node name="idle" type="Node" parent="state_machine" node_paths=PackedStringArray("walk_state", "jump_state", "fall_state")]
+script = ExtResource("6_hrboy")
+walk_state = NodePath("../walk")
+jump_state = NodePath("../jump")
+fall_state = NodePath("../fall")
+animation_name = "idle"
+move_speed = 100.0
+
+[node name="walk" type="Node" parent="state_machine" node_paths=PackedStringArray("fall_state", "idle_state", "jump_state")]
+script = ExtResource("7_mx8li")
+fall_state = NodePath("../fall")
+idle_state = NodePath("../idle")
+jump_state = NodePath("../jump")
+animation_name = "walk"
+move_speed = 100.0
+
+[node name="jump" type="Node" parent="state_machine" node_paths=PackedStringArray("fall_state", "idle_state", "move_state")]
+script = ExtResource("8_56g5m")
+fall_state = NodePath("../fall")
+idle_state = NodePath("../idle")
+move_state = NodePath("../walk")
+jump_force = 400.0
+animation_name = "jump"
+move_speed = 100.0
+
+[node name="fall" type="Node" parent="state_machine" node_paths=PackedStringArray("idle_state", "move_state")]
+script = ExtResource("9_6whx7")
+idle_state = NodePath("../idle")
+move_state = NodePath("../walk")
+animation_name = "fall"
+move_speed = 100.0
+
+[node name="move_component" type="Node" parent="."]
+script = ExtResource("10_xuge5")
