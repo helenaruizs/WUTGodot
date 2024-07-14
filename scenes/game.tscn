@@ -222,5 +222,6 @@ position = Vector2(-113, 65)
 position = Vector2(113, -65)
 offset = Vector2(-60, 0)
 zoom = Vector2(3, 3)
+process_callback = 0
 position_smoothing_enabled = true
 position_smoothing_speed = 2.0
