@@ -5,6 +5,11 @@ extends CharacterBody2D
 @onready var state_machine = $state_machine
 @onready var move_component = $move_component
 
+# Stamina variables WIP
+@export var stamina_max : float = 100.0
+var stamina_total = stamina_max
+var stamina_current = stamina_max
+var stamina_regen = 0.05
 
 func _ready() -> void:
 	# Initialize the state machine, passing a reference of the player to the states,

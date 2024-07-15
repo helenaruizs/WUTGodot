@@ -25,3 +25,6 @@ func process_physics(delta) -> State:
 	if !parent.is_on_floor():
 		return fall_state
 	return null
+
+func process_frame(delta):
+	move_component.regen_stamina()

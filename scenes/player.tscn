@@ -171,3 +171,7 @@ move_speed = 100.0
 
 [node name="move_component" type="Node" parent="."]
 script = ExtResource("10_xuge5")
+
+[node name="Timer" type="Timer" parent="move_component"]
+
+[connection signal="ready" from="." to="move_component" method="_on_player_ready"]
