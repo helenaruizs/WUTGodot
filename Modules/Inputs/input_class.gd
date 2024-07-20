@@ -8,17 +8,19 @@ var runInput : bool	## True for run, false otherwise.
 var attackInput : bool	## True for attack, false otherwise.
 var deffendInput : bool	## True for deffend/block, false otherwise.
 
+## Buffer time to allow some forgiveness on the controls
 var key_buffer_timer = 0
-var key_buffered = 0
+var key_buffered = false
 
+## Buffer time to allow some forgiveness on the controls
 func keyBuffer(_key, _buffer_time) -> bool:
 	if _key:
 		key_buffer_timer = _buffer_time
 	if key_buffer_timer > 0:
-			key_buffered = 1
+			key_buffered = true
 			key_buffer_timer -= 1
 	else:
-			key_buffered = 0
+			key_buffered = false
 	if key_buffered:
 		return true
 	else:
@@ -30,10 +32,7 @@ func getMoveInput() -> float:
 
 ## Return the Jump Input In bool
 func getJumpInputIn() -> bool:
-	if keyBuffer(jumpInputIn, 12):
-		return true
-	else:
-		return false
+	return jumpInputIn
 	
 ## Return the Jump Input Out bool
 func getJumpInputOut() -> bool:
