@@ -3,15 +3,11 @@ extends Node
 
 @export
 var animation_name: String
-@export
-var move_speed: float = 400
-
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 ## Hold a reference to the parent so that it can be controlled by the state
-var parent: CharacterBody2D
+@export var actor: CharacterBody2D
 var animations: AnimatedSprite2D
-@onready var move_component = $state_machine/move_component
+@export var input_node : INPUT
 
 func enter() -> void:
 	animations.play(animation_name)
@@ -29,10 +25,10 @@ func process_physics(delta: float) -> State:
 	return null
 
 func get_movement_input() -> float:
-	return move_component.get_movement_direction()
+	return input_node.getMoveInput()
 
 func get_jump() -> bool:
-	if move_component.wants_tojump() && move_component.can_jump():
+	if input_node.getJumpInputIn() && input_node.can_jump():
 		return true
 	else:
 		return false

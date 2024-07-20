@@ -1,9 +1,13 @@
+@tool
 class_name Player
 extends CharacterBody2D
 
-@onready var animations = $animations
-@onready var state_machine = $state_machine
-@onready var move_component = $move_component
+## These notes can just be %references to the nodes in the tree, but this way, you always know if they aren't connected. 
+@export_group("Nodes")
+@export var input_node : INPUT			## Player's input node. 
+@export var velocity_node : VELOCITY		## Player's velocity node. 
+@export var animations : AnimatedSprite2D
+@export var state_machine : STATE_MACHINE
 
 # Stamina variables WIP
 @export var stamina_max : float = 100.0
@@ -14,17 +18,20 @@ var stamina_regen = 0.05
 func _ready() -> void:
 	# Initialize the state machine, passing a reference of the player to the states,
 	# that way they can move and react accordingly
-	state_machine.init(self, animations, move_component)
-
+#	state_machine.init(self, animations, inputNode)
+	pass
 func _unhandled_input(event: InputEvent) -> void:
-	state_machine.process_input(event)
-
+#	state_machine.process_input(event)
+	pass
 func _physics_process(delta: float) -> void:
-	state_machine.process_physics(delta)
-
+	print(input_node.key_buffer_timer)
+#	state_machine.process_physics(delta)
+	input_node.handleMoveInputs(delta)
+	velocity_node.handleVelocity(delta)
+	velocity_node.activateMove()
 func _process(delta: float) -> void:
-	state_machine.process_frame(delta)
-
+#	state_machine.process_frame(delta)
+	pass
 
 ## Get the gravity from the project settings to be synced with RigidBody nodes.
 #var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")

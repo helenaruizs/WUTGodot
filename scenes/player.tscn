@@ -1,15 +1,13 @@
-[gd_scene load_steps=25 format=3 uid="uid://dqtgmlj4yecv0"]
+[gd_scene load_steps=23 format=3 uid="uid://dqtgmlj4yecv0"]
 
 [ext_resource type="Texture2D" uid="uid://bjamqb7jkkf6j" path="res://assets/sprites/characters/player/player_idle.png" id="1_1b5ye"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_s5nmm"]
 [ext_resource type="Texture2D" uid="uid://c4vih3p5xnbka" path="res://assets/sprites/characters/player/player_jump.png" id="3_yfo8w"]
 [ext_resource type="Texture2D" uid="uid://bgfqhaqp4ysbx" path="res://assets/sprites/characters/player/player_walk.png" id="4_4r27y"]
+[ext_resource type="PackedScene" uid="uid://5oxufjueks2w" path="res://Modules/Inputs/Player/player_controls_component.tscn" id="5_8tp0b"]
 [ext_resource type="PackedScene" uid="uid://07wg3qqi8ki0" path="res://state_machine/state_machine.tscn" id="5_pte05"]
-[ext_resource type="Script" path="res://scripts/idle.gd" id="6_hrboy"]
-[ext_resource type="Script" path="res://scripts/walk.gd" id="7_mx8li"]
-[ext_resource type="Script" path="res://scripts/jump.gd" id="8_56g5m"]
-[ext_resource type="Script" path="res://scripts/fall.gd" id="9_6whx7"]
-[ext_resource type="Script" path="res://scripts/move_component.gd" id="10_xuge5"]
+[ext_resource type="PackedScene" uid="uid://uugmo0xwhho3" path="res://Modules/Attributes/Stamina/stamina_component.tscn" id="11_c6vr6"]
+[ext_resource type="PackedScene" uid="uid://cr246qb0td6a7" path="res://Modules/Movement/velocity_component.tscn" id="12_m28h8"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ytsjw"]
 atlas = ExtResource("3_yfo8w")
@@ -121,8 +119,11 @@ animations = [{
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m5o68"]
 radius = 7.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("input_node", "velocity_node", "animations")]
 script = ExtResource("1_s5nmm")
+input_node = NodePath("PlayerControlsComponent")
+velocity_node = NodePath("Movement/VelocityComponent")
+animations = NodePath("animations")
 
 [node name="animations" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -19)
@@ -134,44 +135,28 @@ autoplay = "idle"
 position = Vector2(0, -15)
 shape = SubResource("CapsuleShape2D_m5o68")
 
-[node name="state_machine" parent="." node_paths=PackedStringArray("starting_state") instance=ExtResource("5_pte05")]
-starting_state = NodePath("idle")
+[node name="PlayerControlsComponent" parent="." instance=ExtResource("5_8tp0b")]
 
-[node name="idle" type="Node" parent="state_machine" node_paths=PackedStringArray("walk_state", "jump_state", "fall_state")]
-script = ExtResource("6_hrboy")
-walk_state = NodePath("../walk")
-jump_state = NodePath("../jump")
-fall_state = NodePath("../fall")
-animation_name = "idle"
-move_speed = 100.0
+[node name="state_machine" parent="." instance=ExtResource("5_pte05")]
+script = null
 
-[node name="walk" type="Node" parent="state_machine" node_paths=PackedStringArray("fall_state", "idle_state", "jump_state")]
-script = ExtResource("7_mx8li")
-fall_state = NodePath("../fall")
-idle_state = NodePath("../idle")
-jump_state = NodePath("../jump")
-animation_name = "walk"
-move_speed = 100.0
+[node name="idle" type="Node" parent="state_machine"]
 
-[node name="jump" type="Node" parent="state_machine" node_paths=PackedStringArray("fall_state", "idle_state", "move_state")]
-script = ExtResource("8_56g5m")
-fall_state = NodePath("../fall")
-idle_state = NodePath("../idle")
-move_state = NodePath("../walk")
-jump_force = 400.0
-animation_name = "jump"
-move_speed = 100.0
+[node name="walk" type="Node" parent="state_machine"]
 
-[node name="fall" type="Node" parent="state_machine" node_paths=PackedStringArray("idle_state", "move_state")]
-script = ExtResource("9_6whx7")
-idle_state = NodePath("../idle")
-move_state = NodePath("../walk")
-animation_name = "fall"
-move_speed = 100.0
+[node name="jump" type="Node" parent="state_machine"]
 
-[node name="move_component" type="Node" parent="."]
-script = ExtResource("10_xuge5")
+[node name="fall" type="Node" parent="state_machine"]
 
-[node name="Timer" type="Timer" parent="move_component"]
+[node name="Attributes" type="Node" parent="."]
 
-[connection signal="ready" from="." to="move_component" method="_on_player_ready"]
+[node name="HealthComponent" type="Node" parent="Attributes"]
+
+[node name="StaminaComponent" parent="Attributes" instance=ExtResource("11_c6vr6")]
+
+[node name="Movement" type="Node" parent="."]
+
+[node name="VelocityComponent" parent="Movement" node_paths=PackedStringArray("actor", "input_node", "stamina_node") instance=ExtResource("12_m28h8")]
+actor = NodePath("../..")
+input_node = NodePath("../../PlayerControlsComponent")
+stamina_node = NodePath("../../Attributes/StaminaComponent")

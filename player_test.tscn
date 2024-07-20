@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://pc0yh5qt4ux6"]
+
+[ext_resource type="PackedScene" uid="uid://5oxufjueks2w" path="res://Modules/Inputs/Player/player_controls_component.tscn" id="1_4wlaq"]
+[ext_resource type="Script" path="res://player_test.gd" id="1_jeyhf"]
+[ext_resource type="PackedScene" uid="uid://uugmo0xwhho3" path="res://Modules/Attributes/Stamina/stamina_component.tscn" id="3_sjqrg"]
+
+[node name="player-test" type="Node2D" node_paths=PackedStringArray("staminaNode")]
+script = ExtResource("1_jeyhf")
+staminaNode = NodePath("StaminaComponent")
+
+[node name="PlayerControlsComponent" parent="." instance=ExtResource("1_4wlaq")]
+
+[node name="StaminaComponent" parent="." instance=ExtResource("3_sjqrg")]
