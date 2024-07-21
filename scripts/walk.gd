@@ -1,18 +1,18 @@
-extends State
+extends STATE
 
 @export
-var fall_state: State
+var fall_state: STATE
 @export
-var idle_state: State
+var idle_state: STATE
 @export
-var jump_state: State
+var jump_state: STATE
 
-func process_input(event: InputEvent) -> State:
+func process_input(event: InputEvent) -> STATE:
 	if get_jump() and parent.is_on_floor():
 		return jump_state
 	return null
 
-func process_physics(delta: float) -> State:
+func process_physics(delta: float) -> STATE:
 	parent.velocity.y += gravity * delta
 	
 	var movement = get_movement_input() * move_speed

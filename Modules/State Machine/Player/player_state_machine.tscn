@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://cqctk6huf4q71"]
+
+[sub_resource type="GDScript" id="GDScript_dkm3v"]
+script/source = "extends STATE_MACHINE
+
+@export var idle_state : STATE
+@export var walk_state : STATE
+@export var jump_state : STATE
+@export var fall_state : STATE
+
+"
+
+[node name="PlayerStateMachine" type="Node"]
+script = SubResource("GDScript_dkm3v")

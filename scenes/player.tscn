@@ -1,13 +1,17 @@
-[gd_scene load_steps=23 format=3 uid="uid://dqtgmlj4yecv0"]
+[gd_scene load_steps=27 format=3 uid="uid://dqtgmlj4yecv0"]
 
 [ext_resource type="Texture2D" uid="uid://bjamqb7jkkf6j" path="res://assets/sprites/characters/player/player_idle.png" id="1_1b5ye"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_s5nmm"]
 [ext_resource type="Texture2D" uid="uid://c4vih3p5xnbka" path="res://assets/sprites/characters/player/player_jump.png" id="3_yfo8w"]
 [ext_resource type="Texture2D" uid="uid://bgfqhaqp4ysbx" path="res://assets/sprites/characters/player/player_walk.png" id="4_4r27y"]
 [ext_resource type="PackedScene" uid="uid://5oxufjueks2w" path="res://Modules/Inputs/Player/player_controls_component.tscn" id="5_8tp0b"]
-[ext_resource type="PackedScene" uid="uid://07wg3qqi8ki0" path="res://state_machine/state_machine.tscn" id="5_pte05"]
+[ext_resource type="Script" path="res://Modules/State Machine/state_machine_class.gd" id="8_8377m"]
+[ext_resource type="Script" path="res://Modules/State Machine/Player/Idle.gd" id="9_it4qs"]
+[ext_resource type="Script" path="res://Modules/State Machine/Player/Walk.gd" id="10_7m1ny"]
 [ext_resource type="PackedScene" uid="uid://uugmo0xwhho3" path="res://Modules/Attributes/Stamina/stamina_component.tscn" id="11_c6vr6"]
+[ext_resource type="Script" path="res://Modules/State Machine/Player/Jump.gd" id="11_h5rfd"]
 [ext_resource type="PackedScene" uid="uid://cr246qb0td6a7" path="res://Modules/Movement/velocity_component.tscn" id="12_m28h8"]
+[ext_resource type="Script" path="res://Modules/State Machine/Player/Fall.gd" id="12_y111r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ytsjw"]
 atlas = ExtResource("3_yfo8w")
@@ -119,11 +123,13 @@ animations = [{
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m5o68"]
 radius = 7.0
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("input_node", "velocity_node", "animations")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("input_node", "velocity_node", "animations", "state_machine", "stamina_node")]
 script = ExtResource("1_s5nmm")
 input_node = NodePath("PlayerControlsComponent")
 velocity_node = NodePath("Movement/VelocityComponent")
 animations = NodePath("animations")
+state_machine = NodePath("StateMachine")
+stamina_node = NodePath("Attributes/StaminaComponent")
 
 [node name="animations" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -19)
@@ -137,17 +143,6 @@ shape = SubResource("CapsuleShape2D_m5o68")
 
 [node name="PlayerControlsComponent" parent="." instance=ExtResource("5_8tp0b")]
 
-[node name="state_machine" parent="." instance=ExtResource("5_pte05")]
-script = null
-
-[node name="idle" type="Node" parent="state_machine"]
-
-[node name="walk" type="Node" parent="state_machine"]
-
-[node name="jump" type="Node" parent="state_machine"]
-
-[node name="fall" type="Node" parent="state_machine"]
-
 [node name="Attributes" type="Node" parent="."]
 
 [node name="HealthComponent" type="Node" parent="Attributes"]
@@ -156,7 +151,28 @@ script = null
 
 [node name="Movement" type="Node" parent="."]
 
-[node name="VelocityComponent" parent="Movement" node_paths=PackedStringArray("actor", "input_node", "stamina_node") instance=ExtResource("12_m28h8")]
+[node name="VelocityComponent" parent="Movement" node_paths=PackedStringArray("actor", "input_node", "animations") instance=ExtResource("12_m28h8")]
 actor = NodePath("../..")
 input_node = NodePath("../../PlayerControlsComponent")
-stamina_node = NodePath("../../Attributes/StaminaComponent")
+animations = NodePath("../../animations")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("starting_state", "actor")]
+script = ExtResource("8_8377m")
+starting_state = NodePath("Idle")
+actor = NodePath("..")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("9_it4qs")
+animation_to_play = "idle"
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("10_7m1ny")
+animation_to_play = "walk"
+
+[node name="Jump" type="Node" parent="StateMachine"]
+script = ExtResource("11_h5rfd")
+animation_to_play = "jump"
+
+[node name="Fall" type="Node" parent="StateMachine"]
+script = ExtResource("12_y111r")
+animation_to_play = "fall"

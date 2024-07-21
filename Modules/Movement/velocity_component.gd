@@ -1,6 +1,8 @@
 class_name VELOCITY
 extends Node
 
+@onready var timer = $Timer
+
 @export_group("Base Variables")
 @export var SPEED : float = 100.0		## Actor's base speed.
 @export var JUMP_VELOCITY : float = -300.0		## Actor's base jump speed.
@@ -10,13 +12,13 @@ extends Node
 @export var jump_height_force : float = 0.4
 
 ## Coyote time WIP
-@export var coyote_hang_timer : float = 10.0
-@export var coyote_jump_timer : float = 400.0
+@export var coyote_time : float = 0.0
+var coyote_jump = false
 
 @export_group("Node Links")
 @export var actor : CharacterBody2D 	## Parent node. 
 @export var input_node : INPUT				## Grab the parent's input node.
-@export var stamina_node : STAMINA = null				## Grab the parent's stamina node, empty by default.
+@export var animations : AnimatedSprite2D
 
 var currentSpeed : float = SPEED			## Local value of the speed after inputs.
 
@@ -32,19 +34,24 @@ var prevVelocity: Vector2 = Vector2.ZERO
 ## Handle any velocity calculations. 
 func handleVelocity(delta):
 	prevVelocity = actor.velocity
-	
 	## Add the gravity and air resistance
-	if not actor.is_on_floor() && coyote_hang_timer <= 0:
-		actor.velocity.y += gravity * delta
-		actor.velocity.x = lerp(prevVelocity.x, actor.velocity.x, air_resistance)	## Smooth the horizontal movement of the air state
-		actor.velocity.y = lerp(prevVelocity.y, actor.velocity.y, jump_lerp)	## Smooth the vertical movement of the air state
-	else:
-		coyote_hang_timer -= 1
+	if not actor.is_on_floor():
+		if coyote_time != 0:
+			coyote_jump = true
+			timer.wait_time = coyote_time
+			timer.start()
+			if _on_timer_timeout():
+				coyote_jump = false
+		if coyote_jump == false:
+			actor.velocity.y += gravity * delta
+			actor.velocity.x = lerp(prevVelocity.x, actor.velocity.x, air_resistance)	## Smooth the horizontal movement of the air state
+			actor.velocity.y = lerp(prevVelocity.y, actor.velocity.y, jump_lerp)	## Smooth the vertical movement of the air state
+
 
 	## Handle jump.
 	if input_node.getJumpInputIn() and actor.is_on_floor():
 		if !supress_stamina_cost:
-			if stamina_node.hasEnoughStamina():
+			if actor.stamina_node.hasEnoughStamina():
 				actor.velocity.y = JUMP_VELOCITY
 		else:
 			actor.velocity.y = JUMP_VELOCITY
@@ -62,7 +69,12 @@ func handleVelocity(delta):
 		actor.velocity.x = direction * currentSpeed
 	else:
 		actor.velocity.x = move_toward(actor.velocity.x, 0, SPEED)
-
+		
+	## Flip sprites
+	if direction > 0:
+		animations.flip_h = false
+	elif direction < 0:
+		animations.flip_h = true
 #/
 ## Call any movement-related functions to initiate movement. 
 func activateMove():
@@ -81,5 +93,5 @@ func calculateSpeed(addModifiers : Array[float], multModifiers : Array[float]):
 	for modifier in multModifiers:
 		currentSpeed *= modifier
 
-
-
+func _on_timer_timeout():
+	pass
