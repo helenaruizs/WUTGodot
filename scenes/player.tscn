@@ -152,6 +152,7 @@ shape = SubResource("CapsuleShape2D_m5o68")
 [node name="Movement" type="Node" parent="."]
 
 [node name="VelocityComponent" parent="Movement" node_paths=PackedStringArray("actor", "input_node", "animations") instance=ExtResource("12_m28h8")]
+coyote_time = 0.1
 actor = NodePath("../..")
 input_node = NodePath("../../PlayerControlsComponent")
 animations = NodePath("../../animations")

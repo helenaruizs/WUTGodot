@@ -5,7 +5,7 @@
 [node name="VelocityComponent" type="Node"]
 script = ExtResource("1_5tc1o")
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 3.0
+[node name="CoyoteTimer" type="Timer" parent="."]
+process_callback = 0
 
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="CoyoteTimer" to="." method="coyote_timeout"]
