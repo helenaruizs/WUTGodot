@@ -24,7 +24,50 @@ func create_point_info(_point_id: int, _point_position: Vector2) -> Dictionary:
 		"position": _point_position
 	}
 	return point_info
-	
+
+func addPoint(tile: Vector2i, check_position: Vector2i, node_type, is_empty: bool, color: Color = Color(1,1,1,1)):
+	## If a tile exist above, it's not an edge
+	if tileAboveExist(tile):
+		return
+	## If the tile to the left (X - 1) is empty
+	if is_empty:
+		if get_cell_source_id(COLLISION_LAYER, check_position) == CELL_IS_EMPTY:
+			var tile_above = Vector2i(tile.x, tile.y - 1)
+			var existing_point_id = tileAlreadyExistInGraph(tile_above)
+			
+			if existing_point_id == -1:
+				var _point_id = _graph.get_available_point_id()
+				var _point_position = map_to_local(tile_above)
+				var _point_info = create_point_info(_point_id, _point_position)  # Create a new point information, and pass in the pointId
+				_point_info.node_type = true
+				_point_info_list.append(_point_info)
+				_graph.add_point(_point_id, _point_position)
+				addVisualPoint(tile_above, color)
+			else:
+				for _point_info in _point_info_list:
+					if _point_info._point_id == existing_point_id:
+						_point_info.node_type = true  # Flag that it's a left edge
+						break
+	if not is_empty:
+		if get_cell_source_id(COLLISION_LAYER, check_position) != CELL_IS_EMPTY:
+			var tile_above = Vector2i(tile.x, tile.y - 1)
+			var existing_point_id = tileAlreadyExistInGraph(tile_above)
+			
+			if existing_point_id == -1:
+				var _point_id = _graph.get_available_point_id()
+				var _point_position = map_to_local(tile_above)
+				var _point_info = create_point_info(_point_id, _point_position)  # Create a new point information, and pass in the pointId
+				_point_info.node_type = true
+				_point_info_list.append(_point_info)
+				_graph.add_point(_point_id, _point_position)
+				addVisualPoint(tile_above, color)
+			else:
+				for _point_info in _point_info_list:
+					if _point_info._point_id == existing_point_id:
+						_point_info.node_type = true  # Flag that it's a left edge
+						break
+				addVisualPoint(tile_above, color)
+
 @export var show_debug_graph : bool = true
 
 const COLLISION_LAYER : int = 0
@@ -48,7 +91,10 @@ func buildGraph() -> void:
 
 func addGraphPoints() -> void:
 	for tile in _used_tiles:
-		addLeftEdgePoint(tile)
+		addPoint(tile, Vector2i(tile.x - 1, tile.y), left_edge, true) # Left Edge point
+		addPoint(tile, Vector2i(tile.x + 1, tile.y), right_edge, true) # Right Edge point
+		addPoint(tile, Vector2i(tile.x - 1, tile.y - 1), left_wall, false) # Left Wall point
+		addPoint(tile, Vector2i(tile.x + 1, tile.y - 1), right_wall, false) # Left Wall point
 
 func tileAlreadyExistInGraph(tile: Vector2i) -> int:
 	var local_position = map_to_local(tile)
@@ -80,40 +126,6 @@ func addVisualPoint(_tile: Vector2, _color := Color("#000000"), _scale := 1.0):
 	visual_point.position = map_to_local(_tile)  # Map the position of the visual point to local coordinates
 	add_child(visual_point)  # Add the visual point as a child to the scene
 
-#region Tile Edge and Wall Graph Points
-
-func addLeftEdgePoint(tile: Vector2i):
-	## If a tile exist above, it's not an edge
-	if tileAboveExist(tile):
-		return
-	## If the tile to the left (X - 1) is empty
-	if get_cell_source_id(COLLISION_LAYER, Vector2i(tile.x - 1, tile.y)) == CELL_IS_EMPTY:
-		var tile_above = Vector2i(tile.x, tile.y - 1)
-		var existing_point_id = tileAlreadyExistInGraph(tile_above)
-		
-		if existing_point_id == -1:
-			var _point_id = _graph.get_available_point_id()
-			var _point_position = map_to_local(tile_above)
-			var _point_info = create_point_info(_point_id, _point_position)  # Create a new point information, and pass in the pointId
-			_point_info.left_edge = true
-			_point_info_list.append(_point_info)
-			_graph.add_point(_point_id, _point_position)
-			addVisualPoint(tile_above)
-		else:
-			for _point_info in _point_info_list:
-				if _point_info._point_id == existing_point_id:
-					_point_info.left_edge = true  # Flag that it's a left edge
-					break
-				addVisualPoint(tile_above, Color("#73e7f7"))
-
-		
-	
-func tileAboveExist(tile: Vector2i) -> bool:
-	if get_cell_source_id(COLLISION_LAYER, Vector2i(tile.x, tile.y - 1)) == CELL_IS_EMPTY:
-		return false
-	return true
-
-#endregion
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
