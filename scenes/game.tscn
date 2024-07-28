@@ -1,7 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dsn27qcc3lv25"]
+[gd_scene load_steps=8 format=3 uid="uid://dsn27qcc3lv25"]
 
+[ext_resource type="Script" path="res://scenes/game.gd" id="1_514yf"]
 [ext_resource type="Texture2D" uid="uid://chhelth5nidgj" path="res://assets/sprites/environment/tileset_mossy_FPO.png" id="1_bjhxy"]
 [ext_resource type="PackedScene" uid="uid://dqtgmlj4yecv0" path="res://scenes/player.tscn" id="2_k3syl"]
+[ext_resource type="PackedScene" uid="uid://c6126yo4qq4fr" path="res://Actors/Pup/pup.tscn" id="3_78wf4"]
+[ext_resource type="Script" path="res://Environment/tile_map.gd" id="3_xua83"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lh7ml"]
 texture = ExtResource("1_bjhxy")
@@ -209,11 +212,14 @@ physics_layer_0/collision_layer = 1
 sources/1 = SubResource("TileSetAtlasSource_lh7ml")
 
 [node name="Game" type="Node2D"]
+script = ExtResource("1_514yf")
 
 [node name="TileMap" type="TileMap" parent="."]
+unique_name_in_owner = true
 tile_set = SubResource("TileSet_0ipyw")
 format = 2
 layer_0/tile_data = PackedInt32Array(196602, 65537, 0, 196603, 65537, 0, 196604, 65537, 0, 196605, 65537, 0, 196606, 65537, 0, 196607, 65537, 0, 131072, 65537, 0, 131073, 65537, 0, 131074, 65537, 0, 131075, 65537, 0, 131076, 65537, 0, 131077, 262145, 2, 131078, 393217, 1, 131079, 65537, 0, 131080, 65537, 0, 131081, 65537, 0, 131082, 65537, 0, 131083, 65537, 0, 131084, 65537, 0, 196601, 65537, 0, 196600, 65537, 0, 196599, 65537, 0, 262135, 65537, 1, 327671, 65537, 1, 327672, 65537, 1, 327673, 65537, 1, 327674, 65537, 1, 327675, 65537, 1, 327676, 65537, 1, 327677, 65537, 1, 327678, 65537, 1, 327679, 65537, 1, 262144, 65537, 1, 262145, 65537, 1, 262146, 65537, 1, 262147, 65537, 1, 262148, 65537, 1, 262149, 65537, 1, 262150, 65537, 1, 262151, 65537, 1, 262152, 65537, 1, 262153, 65537, 1, 262154, 65537, 1, 196618, 65537, 1, 196619, 65537, 1, 196620, 65537, 1, 262156, 65537, 1, 262155, 65537, 1, 196617, 65537, 1, 196616, 65537, 1, 196615, 65537, 1, 196614, 65537, 1, 196613, 65537, 1, 196612, 65537, 1, 196611, 65537, 1, 196610, 65537, 1, 196609, 65537, 1, 196608, 65537, 1, 262143, 65537, 1, 262142, 65537, 1, 262141, 65537, 1, 262140, 65537, 1, 262139, 65537, 1, 262138, 65537, 1, 262137, 65537, 1, 262136, 65537, 1, 65541, 262145, 5, 5, 262145, 4, 65542, 393217, 1, 6, 196609, 4)
+script = ExtResource("3_xua83")
 
 [node name="Player" parent="." instance=ExtResource("2_k3syl")]
 position = Vector2(-113, 65)
@@ -225,3 +231,6 @@ zoom = Vector2(3, 3)
 process_callback = 0
 position_smoothing_enabled = true
 position_smoothing_speed = 2.0
+
+[node name="Pup" parent="." instance=ExtResource("3_78wf4")]
+position = Vector2(-224, 66)

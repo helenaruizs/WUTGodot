@@ -15,6 +15,10 @@ run/main_scene="res://scenes/game.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://project_icon.png"
 
+[autoload]
+
+Global="*res://Data/global.gd"
+
 [display]
 
 window/size/always_on_top=true
@@ -24,6 +28,7 @@ window/size/always_on_top=true
 folder_colors={
 "res://Actors/": "orange",
 "res://Data/": "blue",
+"res://Environment/": "green",
 "res://Modules/": "pink"
 }
 

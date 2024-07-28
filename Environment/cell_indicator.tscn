@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://soitrurm03xs"]
+
+[ext_resource type="Texture2D" uid="uid://o533culp5w5m" path="res://Environment/cell_indicator.png" id="1_n1203"]
+
+[node name="CellIndicator" type="Sprite2D"]
+texture = ExtResource("1_n1203")

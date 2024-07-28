@@ -24,6 +24,9 @@ func _physics_process(delta: float) -> void:
 	input_node.handleMoveInputs(delta)
 	velocity_node.handleVelocity(delta)
 	velocity_node.activateMove()
+	
+	## Save the player's position
+	Global.player_position = global_position
 
 func _process(delta: float) -> void:
 	state_machine._process(delta)
