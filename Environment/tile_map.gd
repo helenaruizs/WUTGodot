@@ -25,6 +25,11 @@ func create_point_info(_point_id: int, _point_position: Vector2) -> Dictionary:
 	}
 	return point_info
 
+func tileAboveExist(tile: Vector2i) -> bool:
+	if get_cell_source_id(COLLISION_LAYER, Vector2i(tile.x, tile.y - 1)) == CELL_IS_EMPTY:
+		return false
+	return true
+
 func addPoint(tile: Vector2i, check_position: Vector2i, node_type, is_empty: bool, color: Color = Color(1,1,1,1)):
 	## If a tile exist above, it's not an edge
 	if tileAboveExist(tile):
@@ -125,7 +130,6 @@ func addVisualPoint(_tile: Vector2, _color := Color("#000000"), _scale := 1.0):
 	
 	visual_point.position = map_to_local(_tile)  # Map the position of the visual point to local coordinates
 	add_child(visual_point)  # Add the visual point as a child to the scene
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
